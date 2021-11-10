@@ -38,7 +38,19 @@ const cat_get = async (req, res, next) => {
 };
 
 const cat_post = async (req, res, next) => {
-  console.log(req.body, req.file);
+  const errors = validationResult;
+  if(!errors.isEmpty()){
+    console.log('cat_post validation: ', errors.array());
+    next(httpError('invalid data', 400));
+    return;
+  }
+
+  if(!req.file){
+    const err = httpError('file not valid', 400);
+    next(err);
+    return;
+  };
+
   // pvm VVVV-KK-PP esim 2010-05-28
   try {
     const { name, birthdate, weight, owner } = req.body;

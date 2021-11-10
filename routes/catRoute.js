@@ -1,8 +1,16 @@
 'use strict';
 // catRoute
 const express = require('express');
+const { body } = require('express-validator');
 const multer = require('multer');
-const upload = multer({ dest: './uploads/' });
+const fileFilter = (req, file, cb) => {
+  if(file.mimetype.includes('image')){
+    cb(null, true);
+  } else{
+    cb(null, false);
+  }
+};
+const upload = multer({ dest: './uploads/', fileFilter });
 const {
   cat_list_get,
   cat_get,
@@ -16,7 +24,13 @@ router.get('/', cat_list_get);
 
 router.get('/:id', cat_get);
 
-router.post('/', upload.single('cat'), cat_post);
+router.post('/', upload.single('cat'),
+  body('name').notEmpty(),
+  body('birthdate').isDate(),
+  body('weight').isNumeric(),
+  body('owner').isNumeric(),
+
+  cat_post);
 
 router.put('/', cat_put);
 
