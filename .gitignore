@@ -173,4 +173,6 @@ uploads/*
 # except one (empty) file to have the folder in version control
 !uploads/.gitkeep
 
+.env
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,node
