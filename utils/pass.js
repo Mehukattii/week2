@@ -2,6 +2,7 @@
 const passport = require('passport');
 const Strategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
+const bcrypt = require('bcryptjs');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJwt = passportJWT.ExtractJwt;
 const { getUserLogin } = require('../models/userModel');
@@ -14,10 +15,10 @@ passport.use(
       const [user] = await getUserLogin(params);
       console.log('Local strategy', user); // result is binary row
       if (!user) {
-        return done(null, false, { message: 'Incorrect email.' });
+        return done(null, false);
       }
-      if (user.password !== password) {
-        return done(null, false, { message: 'Incorrect password.' });
+      if (!bcrypt.compareSync(password, user.password)) {
+        return done(null, false);
       }
       return done(null, { ...user }, { message: 'Logged In Successfully' }); // use spread syntax to create shallow copy to get rid of binary row type
     } catch (err) {
@@ -35,7 +36,7 @@ passport.use(
       secretOrKey: process.env.JWT_SECRET,
     },
     (jwtPayload, done) => {
-      console.log('payload', jwtPayload);
+      // console.log('payload', jwtPayload);
       done(null, jwtPayload);
     }
   )
